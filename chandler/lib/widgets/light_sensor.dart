@@ -1,10 +1,13 @@
 import 'package:chandler/widgets/led_strip_mode.dart';
 import 'package:chandler/widgets/light_sensor_dependency_mode_button.dart';
-import 'package:chandler/widgets/switch.dart';
+import 'package:chandler/widgets/relay_switch.dart';
 import 'package:flutter/material.dart';
 
+import '../client.dart';
+
 class LightSensor extends StatefulWidget {
-  LightSensor({super.key});
+  final Client client;
+  const LightSensor({super.key, required this.client});
 
   @override
   State<LightSensor> createState() => _LightSensorState();

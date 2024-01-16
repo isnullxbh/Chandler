@@ -1,12 +1,14 @@
+import 'package:chandler/mcu/device_identity.dart';
 import 'package:chandler/widgets/light_sensor_dependency_mode_button.dart';
-import 'package:chandler/widgets/switch.dart';
+import 'package:chandler/widgets/relay_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:chandler/client.dart';
 
 class Relay extends StatefulWidget {
+  final DeviceIdentity deviceIdentity;
+  final Client client;
 
-  final int index;
-
-  Relay({super.key, required this.index});
+  Relay({super.key, required this.deviceIdentity, required this.client});
 
   @override
   State<Relay> createState() => _RelayState();
@@ -44,7 +46,7 @@ class _RelayState extends State<Relay> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Text("Устройство: Реле ${widget.index}",
+                  Text("Устройство: Реле ${widget.deviceIdentity.index!}",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black.withOpacity(0.9),
@@ -55,7 +57,7 @@ class _RelayState extends State<Relay> {
               Row(
                 children: <Widget>[
                   Text("Состояние:"),
-                  SwitchButton()
+                  RelaySwitchButton(index: widget.deviceIdentity.index!, client: widget.client)
                 ],
               ),
               Row(
@@ -64,7 +66,7 @@ class _RelayState extends State<Relay> {
                 ],
               ),
               Row(children: <Widget>[
-                LightSensorDependencyModeButton()
+                LightSensorDependencyModeButton(client: widget.client, deviceIdentity: widget.deviceIdentity)
               ],)
             ],
           )
