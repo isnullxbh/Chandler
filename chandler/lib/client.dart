@@ -69,7 +69,7 @@ class Client {
     data[0] = 0x06;
     data[1] = state.index;
     _socket.send(data, _address, _port);
-    print("Send command to set LED strip state...");
+    print("Send command to set LED strip state...Done");
   }
 
   void setLightSensorDependencyForLedStrip(LightSensorDependency mode) {
