@@ -103,7 +103,11 @@ void Server::onSent(std::shared_ptr<StateData> /*data*/, const asio::error_code&
 {
     if (ec)
     {
-        std::cout << "An error occured while sending the response: " << ec.message() << std::endl;
+        std::cerr << "An error occured while sending the response: " << ec.message() << std::endl;
+    }
+    else
+    {
+        std::cout << "State sent" << std::endl;
     }
 }
 
