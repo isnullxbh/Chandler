@@ -1,11 +1,13 @@
 import 'package:chandler/client.dart';
+import 'package:chandler/mcu/state.dart';
 import 'package:flutter/material.dart';
 
 class RelaySwitchButton extends StatefulWidget {
   final int index;
   final Client client;
+  final McuState mcuState;
 
-  const RelaySwitchButton({super.key, required this.index, required this.client});
+  const RelaySwitchButton({super.key, required this.index, required this.client, required this.mcuState});
 
   static final List<String> states = <String>["Выкл.", "Вкл."];
 
@@ -15,8 +17,10 @@ class RelaySwitchButton extends StatefulWidget {
 
 class _RelaySwitchButtonState extends State<RelaySwitchButton> {
   String value = "Выкл.";
+
   @override
   Widget build(BuildContext context) {
+    value = widget.mcuState.isRelayOn(widget.index) ? "Вкл." : "Выкл.";
     return DropdownButton<String>(
       value: value,
       onChanged: (String? newValue) {

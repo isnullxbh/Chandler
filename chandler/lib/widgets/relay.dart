@@ -1,4 +1,5 @@
 import 'package:chandler/mcu/device_identity.dart';
+import 'package:chandler/mcu/state.dart';
 import 'package:chandler/widgets/light_sensor_dependency_mode_button.dart';
 import 'package:chandler/widgets/relay_switch.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ import 'package:chandler/client.dart';
 class Relay extends StatefulWidget {
   final DeviceIdentity deviceIdentity;
   final Client client;
+  final McuState mcuState;
 
-  Relay({super.key, required this.deviceIdentity, required this.client});
+  const Relay({super.key, required this.deviceIdentity, required this.client, required this.mcuState});
 
   @override
   State<Relay> createState() => _RelayState();
@@ -17,6 +19,7 @@ class Relay extends StatefulWidget {
 class _RelayState extends State<Relay> {
   @override
   Widget build(BuildContext context) {
+    final image = widget.mcuState.isRelayOn(widget.deviceIdentity.index!) ? "switch-on.png" : "switch-off.png";
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -37,7 +40,7 @@ class _RelayState extends State<Relay> {
             children: <Widget>[
               Container(
                 width: 100,
-                child: Image.asset("assets/images/switch-off.png", height: 64,)
+                child: Image.asset("assets/images/$image", height: 64)
               )
             ],
           ),
@@ -56,17 +59,17 @@ class _RelayState extends State<Relay> {
               ),
               Row(
                 children: <Widget>[
-                  Text("Состояние:"),
-                  RelaySwitchButton(index: widget.deviceIdentity.index!, client: widget.client)
+                  const Text("Состояние:"),
+                  RelaySwitchButton(index: widget.deviceIdentity.index!, client: widget.client, mcuState: widget.mcuState)
                 ],
               ),
-              Row(
+              const Row(
                 children: <Widget>[
                   Text("Режим работы по датчику освещенности:")
                 ],
               ),
               Row(children: <Widget>[
-                LightSensorDependencyModeButton(client: widget.client, deviceIdentity: widget.deviceIdentity)
+                LightSensorDependencyModeButton(client: widget.client, deviceIdentity: widget.deviceIdentity, mcuState: widget.mcuState)
               ],)
             ],
           )

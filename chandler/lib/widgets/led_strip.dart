@@ -1,6 +1,6 @@
+import 'package:chandler/mcu/state.dart';
 import 'package:chandler/widgets/led_strip_mode.dart';
 import 'package:chandler/widgets/light_sensor_dependency_mode_button.dart';
-import 'package:chandler/widgets/relay_switch.dart';
 import 'package:flutter/material.dart';
 
 import '../client.dart';
@@ -9,7 +9,9 @@ import '../mcu/device_identity.dart';
 class LedStrip extends StatefulWidget {
   final DeviceIdentity deviceIdentity;
   final Client client;
-  LedStrip({super.key, required this.deviceIdentity, required this.client});
+  final McuState mcuState;
+
+  LedStrip({super.key, required this.deviceIdentity, required this.client, required this.mcuState});
 
   @override
   State<LedStrip> createState() => _LedStripState();
@@ -58,16 +60,16 @@ class _LedStripState extends State<LedStrip> {
               Row(
                 children: <Widget>[
                   const Text("Состояние:"),
-                  LedStripMode(deviceIdentity: widget.deviceIdentity, client: widget.client)
+                  LedStripMode(deviceIdentity: widget.deviceIdentity, client: widget.client, mcuState: widget.mcuState)
                 ],
               ),
-              Row(
+              const Row(
                 children: <Widget>[
-                  const Text("Режим работы по датчику освещенности:")
+                  Text("Режим работы по датчику освещенности:")
                 ],
               ),
               Row(children: <Widget>[
-                LightSensorDependencyModeButton(deviceIdentity: widget.deviceIdentity, client: widget.client)
+                LightSensorDependencyModeButton(deviceIdentity: widget.deviceIdentity, client: widget.client, mcuState: widget.mcuState)
               ],)
             ],
           )

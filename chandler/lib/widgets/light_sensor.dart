@@ -1,13 +1,13 @@
-import 'package:chandler/widgets/led_strip_mode.dart';
-import 'package:chandler/widgets/light_sensor_dependency_mode_button.dart';
-import 'package:chandler/widgets/relay_switch.dart';
+import 'package:chandler/mcu/light_sensor_state.dart';
+import 'package:chandler/mcu/state.dart';
 import 'package:flutter/material.dart';
 
 import '../client.dart';
 
 class LightSensor extends StatefulWidget {
   final Client client;
-  const LightSensor({super.key, required this.client});
+  final McuState mcuState;
+  const LightSensor({super.key, required this.client, required this.mcuState});
 
   @override
   State<LightSensor> createState() => _LightSensorState();
@@ -56,7 +56,7 @@ class _LightSensorState extends State<LightSensor> {
               ),
               Row(
                 children: <Widget>[
-                  Text("Состояние: Низкое"),
+                  Text("Состояние: ${widget.mcuState.lightSensorState == LightSensorState.low ? "Низкое" : "Высокое"}"),
                 ],
               )
             ],

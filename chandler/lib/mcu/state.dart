@@ -15,6 +15,31 @@ class McuState {
   LightSensorDependency ledStripLsd = LightSensorDependency.disabled;
   LightSensorState lightSensorState = LightSensorState.low;
 
+  bool isRelayOn(int relayIndex) {
+    switch (relayIndex) {
+      case 1:
+        return relay1Enabled;
+
+      case 2:
+        return relay2Enabled;
+
+      default:
+        throw Exception("Invalid index");
+    }
+  }
+
+  void update(Uint8List data) {
+    final tmp = createFrom(data);
+    controlType = tmp.controlType;
+    relay1Enabled = tmp.relay1Enabled;
+    relay1Lsd = tmp.relay1Lsd;
+    relay2Enabled = tmp.relay2Enabled;
+    relay2Lsd = tmp.relay2Lsd;
+    ledStripState = tmp.ledStripState;
+    ledStripLsd = tmp.ledStripLsd;
+    lightSensorState = tmp.lightSensorState;
+  }
+
   static McuState createFrom(Uint8List data) {
     var state = McuState();
     state.controlType = ControlType.fromInt(data.elementAt(0))!;

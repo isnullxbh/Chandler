@@ -2,12 +2,15 @@ import 'package:chandler/client.dart';
 import 'package:chandler/mcu/device_identity.dart';
 import 'package:chandler/mcu/device_type.dart';
 import 'package:chandler/mcu/light_sensor_dependency.dart';
+import 'package:chandler/mcu/state.dart';
 import 'package:flutter/material.dart';
 
 class LightSensorDependencyModeButton extends StatefulWidget {
   final Client client;
   final DeviceIdentity deviceIdentity;
-  const LightSensorDependencyModeButton({super.key, required this.client, required this.deviceIdentity});
+  final McuState mcuState;
+
+  const LightSensorDependencyModeButton({super.key, required this.client, required this.deviceIdentity, required this.mcuState});
 
   static final List<String> states = <String>["Выкл.", "Прямой", "Инверсный"];
 
@@ -16,9 +19,34 @@ class LightSensorDependencyModeButton extends StatefulWidget {
 }
 
 class _LightSensorDependencyModeButtonState extends State<LightSensorDependencyModeButton> {
-  String value = "Выкл.";
+  String value = "";
+
+  static String getModeDescriptor(LightSensorDependency dependency) {
+    switch (dependency) {
+      case LightSensorDependency.disabled:
+        return "Выкл.";
+      case LightSensorDependency.inverse:
+        return "Инверсный";
+      case LightSensorDependency.direct:
+        return "Прямой";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    switch (widget.deviceIdentity.type) {
+      case DeviceType.relay:
+        value = getModeDescriptor(widget.deviceIdentity.index! == 1 ? widget.mcuState.relay1Lsd : widget.mcuState.relay2Lsd);
+        break;
+
+      case DeviceType.ledStrip:
+        value = getModeDescriptor(widget.mcuState.ledStripLsd);
+        break;
+
+      default:
+        value = "Выкл.";
+    }
+
     return DropdownButton<String>(
       value: value,
       onChanged: (String? newValue) {
