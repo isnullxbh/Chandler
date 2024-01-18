@@ -9,6 +9,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <random>
 
 #include <mcu-simulator/mcu.hpp>
 #include <mcu-simulator/message_type.hpp>
@@ -44,20 +45,24 @@ void Server::onReceived(const asio::error_code& ec, std::size_t /*bytes_transfer
         const auto& state = Mcu::get().state();
 
         auto state_data = std::make_shared<StateData>(std::array {
-            static_cast<char>(state.mode),            // 0
-            static_cast<char>(state.relay1_state),    // 1
-            static_cast<char>(state.relay2_state),    // 2
-            static_cast<char>(state.relay1_lsd),      // 3
-            static_cast<char>(state.relay2_lsd),      // 4
-            static_cast<char>(state.led_strip_state), // 5
-            static_cast<char>(state.led_strip_lsd),   // 6
-            static_cast<char>(0x01)                   // 7
+            static_cast<char>(state.mode),                          // 0
+            static_cast<char>(state.relay1_state),                  // 1
+            static_cast<char>(state.relay2_state),                  // 2
+            static_cast<char>(state.relay1_lsd),                    // 3
+            static_cast<char>(state.relay2_lsd),                    // 4
+            static_cast<char>(state.led_strip_state),               // 5
+            static_cast<char>(state.led_strip_lsd),                 // 6
+            static_cast<char>(std::rand() % 2 == 0 ? 0x01 : 0x00)   // 7
         });
 
         _socket.async_send_to(asio::buffer(*state_data), _remote_endpoint,
             std::bind_front(&Server::onSent, this, state_data));
 
         startReceive();
+    }
+    else
+    {
+        std::cerr << "An error occurred while receiving: " << ec.message() << std::endl;
     }
 }
 
@@ -94,7 +99,10 @@ void Server::processCommand()
             break;
 
         case MessageType::GetState:
+            break;
+
         default:
+            std::cerr << "Unknown command: " << _buffer[0] << std::endl;
             break;
     }
 }
