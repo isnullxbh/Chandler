@@ -22,8 +22,11 @@ class PeripheryManagementPage extends StatefulWidget {
 class PeripheryManagementPageState extends State<PeripheryManagementPage> {
   @override
   Widget build(BuildContext context) {
-    widget.client.onMessageReceived = (Uint8List data) =>
+    widget.client.onMessageReceived = (Uint8List data) {
+      if (mounted) {
         setState(() => widget.mcuState.update(data));
+      }
+    };
 
     return Scaffold(
       appBar: AppBar(title: const Text("Управление периферией"),),

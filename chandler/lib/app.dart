@@ -4,7 +4,17 @@ import 'pages/home.dart';
 
 class App extends StatelessWidget {
   final List<Client> _clients = [];
-  App({super.key});
+
+  void updateMcuState() {
+    for (final client in _clients) {
+      client.getState().ignore();
+    }
+    Future.delayed(const Duration(seconds: 3), () => updateMcuState());
+  }
+
+  App({super.key}) {
+    updateMcuState();
+  }
 
   // This widget is the root of your application.
   @override
