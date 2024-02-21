@@ -1,8 +1,10 @@
+import 'package:chandler/client.dart';
 import 'package:flutter/material.dart';
 import 'pages/home.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  final List<Client> _clients = [];
+  App({super.key});
 
   // This widget is the root of your application.
   @override
@@ -29,7 +31,7 @@ class App extends StatelessWidget {
         useMaterial3: true,
         fontFamily: "JetBrains"
       ),
-      home: const MyHomePage(title: 'Chandler'),
+      home: HomePage(clients: _clients),
     );
   }
 }

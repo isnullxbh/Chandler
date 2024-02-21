@@ -36,6 +36,10 @@ class Client {
     return socket.then((socket) => Client._construct(socket, host, port));
   }
 
+  String endpoint() {
+    return "${_address.host}:$_port";
+  }
+
   void enableRelay(int relayIndex) {
     print("Send command to enable relay ${relayIndex}...");
     var data = Uint8List(2);

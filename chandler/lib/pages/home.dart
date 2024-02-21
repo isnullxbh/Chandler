@@ -2,93 +2,90 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:chandler/mcu/state.dart';
+import 'package:chandler/pages/add_mcu.dart';
 import 'package:chandler/pages/periphery_management.dart';
+import 'package:chandler/widgets/mcu_endpoint.dart';
 import 'package:flutter/material.dart';
 import 'package:chandler/client.dart';
 
-class MyHomePage extends StatefulWidget {
-  final String title;
+class HomePage extends StatefulWidget {
+  final List<Client> clients;
 
-  const MyHomePage({super.key, required this.title});
+  const HomePage({super.key, required this.clients});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String _status = "";
-  final  _endpointController = TextEditingController();
-  BuildContext? _context;
-
-  @override
-  void dispose() {
-    _endpointController.dispose();
-    super.dispose();
-  }
-
-  void updateStatus(String status) {
-    setState(() => _status = status);
-  }
-
-  void _connectToMcu() async {
-    final endpoint = _endpointController.text;
-    final separator = endpoint.indexOf(":");
-
-    if (separator == -1) {
-      updateStatus("Invalid endpoint address");
-      return;
-    }
-
-    final host = InternetAddress.tryParse(endpoint.substring(0, separator));
-    final port = int.tryParse(endpoint.substring(separator + 1));
-
-    if (host == null || port == null) {
-      updateStatus("Invalid host/port");
-      return;
-    }
-
-    Client.connect(host, port)
-        .then(onConnectionEstablished)
-        .catchError(handleConnectionError);
-  }
-
-  void onConnectionEstablished(Client client) {
+class _MyHomePageState extends State<HomePage> {
+  void goToPeripheryManagementPage(Client client, BuildContext context) {
     client.onMessageReceived = (Uint8List data) {
       final state = McuState.createFrom(data);
       final route = MaterialPageRoute(builder: (context) => PeripheryManagementPage(client: client, mcuState: state));
-      Navigator.push(_context!, route);
+      Navigator.push(context, route);
     };
     client.getState().ignore();
   }
 
-  void handleConnectionError(error) {
-    print("An error occurred while connecting to the MCU: $error");
+  ListView createMcuListView() {
+    var view = ListView.builder(
+        itemCount: widget.clients.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+            decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.85),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, 1)
+                  )
+                ]
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                    "Тестовый стенд #$index ",
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                McuEndpoint(client: widget.clients[index]),
+                TextButton(
+                    onPressed: () => goToPeripheryManagementPage(widget.clients[index], context),
+                    child: const Text("Управление")),
+                TextButton(
+                    onPressed: () {
+                        widget.clients.removeAt(index);
+                        setState(() => {});
+                    },
+                    child: const Text("Удалить"))
+              ],
+            ),
+          );
+        },
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true);
+    return view;
   }
 
   @override
   Widget build(BuildContext context) {
-    _context = context;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text("Список стендов"),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(_status),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextField(
-                controller: _endpointController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Enter MCU/SBC endpoint:"))
+            Container(
+              // color: Colors.blue,
+              child: createMcuListView(),
             ),
             TextButton(
-                onPressed: _connectToMcu,
-                child: const Text("Connect"))
+                onPressed: () => { Navigator.push(context, MaterialPageRoute(builder: (context) => AddMcuPage(clients: widget.clients))) },
+                child: const Text("Добавить")),
           ],
         ),
       ),
